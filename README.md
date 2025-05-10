@@ -1,17 +1,14 @@
-# Node Express template project
 
-This project is based on a GitLab [Project Template](https://docs.gitlab.com/ee/user/project/#create-a-project-from-a-built-in-template).
+## Features
 
-Improvements can be proposed in the [original project](https://gitlab.com/gitlab-org/project-templates/express).
+- **React** for building the user interface.
+- **Vite** as the build tool with Hot Module Replacement (HMR) for a fast development experience.
+- TypeScript for type safety and better code quality.
 
-## CI/CD with Auto DevOps
+## Setup
 
-This template is compatible with [Auto DevOps](https://docs.gitlab.com/ee/topics/autodevops/).
+To set up the frontend locally, follow these steps:
 
-If Auto DevOps is not already enabled for this project, you can [turn it on](https://docs.gitlab.com/ee/topics/autodevops/#enable-or-disable-auto-devops) in the project settings.
-
-### Developing with Gitpod
-
-This template has a fully-automated dev setup for [Gitpod](https://docs.gitlab.com/ee/integration/gitpod.html).
-
-If you open this project in Gitpod, you'll get all Node dependencies pre-installed.
+1. Navigate to the `web/` directory:
+   ```bash
+   cd web
