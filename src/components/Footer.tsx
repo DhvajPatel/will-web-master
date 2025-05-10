@@ -9,7 +9,7 @@ const Footer = () => {
 
     return (
         <footer style={{ backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText, textAlign: "center" }}>
-            <Typography variant="body2">© {currentYear} Param-Ichha. All rights reserved.</Typography>
+            <Typography variant="body2">© {currentYear} Param Ichha. All rights reserved.</Typography>
         </footer>
     );
 };
