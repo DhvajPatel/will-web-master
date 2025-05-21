@@ -6,7 +6,7 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "types": ["vitest"],
+    "types": ["vitest"], // Ensure this is correctly set
     "skipLibCheck": true,
 
     /* Bundler mode */
