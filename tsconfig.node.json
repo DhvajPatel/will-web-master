@@ -5,7 +5,7 @@
     "target": "ES2022",
     "lib": ["ES2023"],
     "module": "ESNext",
-    "types": ["vitest"],
+    "types": ["vitest"], // Ensure this is correctly set
     "skipLibCheck": true,
 
     /* Bundler mode */

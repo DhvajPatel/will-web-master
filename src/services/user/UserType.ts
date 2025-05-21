@@ -7,4 +7,7 @@ export enum UserType {
     TECH_PARTNER = "TECH_PARTNER",
     SUPPORT_USER = "SUPPORT_USER",
     SUPER_ADMIN = "SUPER_ADMIN",
+    ACCOUNT_USER = "account_user",
+    PARTNER_USER = "partner_user",
+    ADMIN_USER = "admin_user",
 }
