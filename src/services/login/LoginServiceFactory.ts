@@ -5,6 +5,7 @@ import { LoginService } from './LoginService'; // Interface
 export const LoginServiceFactory = (): LoginService => {
     console.log('Using service:', import.meta.env.VITE_USE_MOCK); // Log the environment value
     console.log('import.meta.env.VITE_USE_MOCK:', import.meta.env.VITE_USE_MOCK); // Log the environment value
+    console.log('Testing.......');
     if (import.meta.env.VITE_USE_MOCK === 'true') {
         console.log('Using Mock Service');
         return new LoginServiceMockImpl(); // Mock service
