@@ -6,7 +6,7 @@ const ThemeToggle = () => {
   const { currentTheme, toggleTheme } = useTheme(); // Use ThemeContext to get the active theme and toggle function
 
   // Determine the label for the tooltip
-  const nextThemeName = currentTheme === "blue" ? "Pink Theme" : "Blue Theme";
+  const nextThemeName = currentTheme === "blue" ? "Orange Theme" : "Blue Theme";
 
   return (
     <Tooltip title={`Switch to ${nextThemeName}`}>

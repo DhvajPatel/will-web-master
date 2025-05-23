@@ -1,10 +1,10 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 import { ThemeProvider as MuiThemeProvider, CssBaseline } from "@mui/material";
-import { blueTheme, pinkTheme } from "../styles/theme"; // Import your themes (blue and pink)
+import { blueTheme, vanilaTheme } from "../styles/theme"; // Import your themes (blue and vanilla)
 
 // Define the type for ThemeContext
 type ThemeContextType = {
-  currentTheme: string; // e.g., "blue" or "pink"
+  currentTheme: string; // e.g., "blue" or "vanilla"
   toggleTheme: () => void; // Function to toggle the theme
 };
 
@@ -13,15 +13,15 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 // ThemeProvider Component
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
-  const [currentTheme, setCurrentTheme] = useState<string>("blue"); // Default theme name
+  const [currentTheme, setCurrentTheme] = useState<string>("vanilla"); // Default theme name
 
   // Function to toggle the active theme
   const toggleTheme = () => {
-    setCurrentTheme((prevTheme) => (prevTheme === "blue" ? "pink" : "blue"));
+    setCurrentTheme((prevTheme) => (prevTheme === "blue" ? "vanilla" : "blue"));
   };
 
   // Dynamically apply the correct theme based on currentTheme
-  const appliedTheme = currentTheme === "pink" ? blueTheme : pinkTheme;
+  const appliedTheme = currentTheme === "blue" ? blueTheme : vanilaTheme;
 
   return (
     <ThemeContext.Provider value={{ currentTheme, toggleTheme }}>
