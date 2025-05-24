@@ -207,6 +207,7 @@ const Register = () => {
           error={formData.email !== "" && !isEmailValid(formData.email)}
           helperText={formData.email !== "" && !isEmailValid(formData.email) ? "Please enter a valid email address" : ""}
           sx={{ mb: 2 }}
+          disabled={showVerification}
         />
 
         <TextField
