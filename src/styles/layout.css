@@ -1,0 +1,33 @@
+/* src/styles/layout.css */
+.layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Ensure Header + Content + Footer use the entire height */
+}
+
+.layout-header,
+.layout-footer {
+    width: 100%; /* Full width for Header and Footer */
+    background-color: #f5f5f5; /* Light gray color */
+    padding: 1rem 2rem; /* Add spacing inside Header and Footer */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for better separation */
+}
+
+.layout-content {
+    flex: 1; /* Grow to fill available space between Header and Footer */
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    padding: 2rem; /* Add padding around the content */
+    background-color: #ffffff; /* White background */
+}
+
+.center-frame {
+    max-width: 1200px; /* Restrict content width */
+    width: 100%;
+    padding: 2rem; /* Add inner padding */
+    border: 1px solid #e0e0e0; /* Subtle border for frame effect */
+    border-radius: 8px; /* Rounded corners */
+    background: #ffffff; /* Make sure the frame is white */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08); /* Add light shadow for a clean appearance */
+}
