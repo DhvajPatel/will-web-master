@@ -1,6 +1,17 @@
 import { useState, useEffect } from "react";
-import { Container, Typography, Box, TextField, Button, MenuItem, Alert, CircularProgress } from "@mui/material";
+import {
+  Container,
+  Typography,
+  Box,
+  TextField,
+  Button,
+  MenuItem,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+
 import { useNavigate } from "react-router-dom";
+import Flag from "react-world-flags"; // <-- Import Flag component here
 
 // Types
 interface FormData {
@@ -11,19 +22,31 @@ interface FormData {
   confirmPassword: string;
 }
 
+interface RegisterResponse {
+  success: boolean;
+  message: string;
+}
+
+// Use correct country codes for react-world-flags (GB for UK, not UK)
+const countries = [
+  { value: "IN", label: "India" },
+  { value: "GB", label: "United Kingdom (UK)" },
+  { value: "US", label: "United States (US)" },
+  { value: "CA", label: "Canada" },
+  { value: "AU", label: "Australia" },
+];
+
 const Register = () => {
   const navigate = useNavigate();
-  
-  // Form data
+
   const [formData, setFormData] = useState<FormData>({
     email: "",
-    country: "UK",
+    country: "IN",
     verificationCode: "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
-  // UI states
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -32,7 +55,7 @@ const Register = () => {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [passwordMessage, setPasswordMessage] = useState("");
 
-  // Timer for verification code
+  // Timer effect
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (isTimerActive && timeLeft > 0) {
@@ -47,64 +70,34 @@ const Register = () => {
     return () => clearInterval(timer);
   }, [isTimerActive, timeLeft]);
 
-  // Format time as MM:SS
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`;
   };
 
-  // Check if email is valid
-  const isEmailValid = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  };
+  const isEmailValid = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  // Check password strength
   const checkPasswordStrength = (password: string) => {
-    if (password.length < 8) {
-      return "Password must be at least 8 characters long";
-    }
-
-    // Check for uppercase letter
-    if (!/[A-Z]/.test(password)) {
-      return "Password must include at least one uppercase letter (A-Z)";
-    }
-
-    // Check for lowercase letter
-    if (!/[a-z]/.test(password)) {
-      return "Password must include at least one lowercase letter (a-z)";
-    }
-
-    // Check for number
-    if (!/[0-9]/.test(password)) {
-      return "Password must include at least one number (0-9)";
-    }
-
-    // Check for special character
-    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
-      return "Password must include at least one special character (!@#$%^&*(),.?\":{}|<>)";
-    }
-
+    if (password.length < 8) return "Password must be at least 8 characters long";
+    if (!/[A-Z]/.test(password)) return "Must include an uppercase letter";
+    if (!/[a-z]/.test(password)) return "Must include a lowercase letter";
+    if (!/[0-9]/.test(password)) return "Must include a number";
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) return "Must include a special character";
     return "";
   };
 
-  // Check if form is valid for verification code request
-  const isFormValid = () => {
-    return isEmailValid(formData.email) && formData.country === "UK";
-  };
+  const isFormValid = () =>
+    isEmailValid(formData.email) && formData.country.length > 0;
 
-  // Check if register button should be enabled
-  const isRegisterEnabled = () => {
-    return (
-      showVerification &&
-      formData.verificationCode.length === 6 &&
-      !passwordMessage && 
-      formData.password === formData.confirmPassword &&
-      isTimerActive
-    );
-  };
+  const isRegisterEnabled = () =>
+    showVerification &&
+    formData.verificationCode.length === 6 &&
+    !passwordMessage &&
+    formData.password === formData.confirmPassword &&
+    isTimerActive;
 
-  // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -115,69 +108,70 @@ const Register = () => {
     }
   };
 
-  // Request verification code
   const handleRequestCode = async () => {
     if (!isFormValid()) {
-      setError("Please enter a valid email address");
+      setError("Please enter a valid email address and select a country.");
       return;
     }
 
     setIsLoading(true);
+    setError("");
+    setSuccess("");
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setShowVerification(true);
-      setIsTimerActive(true);
-      setTimeLeft(15 * 60);
-      setSuccess("Verification code sent successfully!");
+      const response = await fetch("http://localhost:5000/send-code", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: formData.email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        if (data.success) {
+          setSuccess("Verification code sent! Check your email.");
+          setShowVerification(true);
+          setTimeLeft(15 * 60);
+          setIsTimerActive(true);
+        } else {
+          setError(data.message || "Failed to send verification code.");
+        }
+      } else {
+        setError(data.message || "Server error occurred.");
+      }
     } catch (err) {
-      setError("Failed to send verification code. Please try again.");
+      console.error("Error sending verification code:", err);
+      setError("Network error. Please check your connection.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Mock API call for registration
-  const mockRegisterAPI = async (data: any) => {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Only 123456 is valid
+  const mockRegisterAPI = async (data: FormData): Promise<RegisterResponse> => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     if (data.verificationCode !== "123456") {
-      return {
-        success: false,
-        message: "Invalid verification code. Please try again."
-      };
+      return { success: false, message: "Invalid verification code. Please try again." };
     }
 
-    return {
-      success: true,
-      message: "Registration successful"
-    };
+    return { success: true, message: "Registration successful" };
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!isRegisterEnabled()) {
-      return;
-    }
+
+    if (!isRegisterEnabled()) return;
 
     setIsLoading(true);
     try {
-      const response = await mockRegisterAPI({
-        email: formData.email,
-        country: formData.country,
-        verificationCode: formData.verificationCode,
-        password: formData.password
-      });
-
+      const response = await mockRegisterAPI(formData);
       if (response.success) {
-        setSuccess("Registration successful! Redirecting to login...");
+        setSuccess("Registration successful! Redirecting...");
         setTimeout(() => navigate("/login"), 2000);
       } else {
         setError(response.message || "Registration failed. Please try again.");
       }
-    } catch (err) {
+    } catch {
       setError("Registration failed. Please try again.");
     } finally {
       setIsLoading(false);
@@ -205,7 +199,7 @@ const Register = () => {
           value={formData.email}
           onChange={handleChange}
           error={formData.email !== "" && !isEmailValid(formData.email)}
-          helperText={formData.email !== "" && !isEmailValid(formData.email) ? "Please enter a valid email address" : ""}
+          helperText={formData.email !== "" && !isEmailValid(formData.email) ? "Invalid email" : ""}
           sx={{ mb: 2 }}
           disabled={showVerification}
         />
@@ -219,8 +213,32 @@ const Register = () => {
           value={formData.country}
           onChange={handleChange}
           sx={{ mb: 2 }}
+          SelectProps={{
+            renderValue: (selected) => {
+              const selectedCountry = countries.find((c) => c.value === selected);
+              return (
+                <>
+                  {selectedCountry && (
+                    <Flag
+                      code={selectedCountry.value}
+                      style={{ width: 24, height: 16, marginRight: 8, verticalAlign: 'middle' }}
+                    />
+                  )}
+                  {selectedCountry?.label}
+                </>
+              );
+            },
+          }}
         >
-          <MenuItem value="UK">United Kingdom (UK)</MenuItem>
+          {countries.map((option) => (
+            <MenuItem key={option.value} value={option.value}>
+              <Flag
+                code={option.value}
+                style={{ width: 24, height: 16, marginRight: 8, verticalAlign: 'middle' }}
+              />
+              {option.label}
+            </MenuItem>
+          ))}
         </TextField>
 
         {!showVerification ? (
@@ -244,7 +262,11 @@ const Register = () => {
               value={formData.verificationCode}
               onChange={handleChange}
               error={formData.verificationCode !== "" && formData.verificationCode.length !== 6}
-              helperText={formData.verificationCode !== "" && formData.verificationCode.length !== 6 ? "Code must be 6 digits" : ""}
+              helperText={
+                formData.verificationCode !== "" && formData.verificationCode.length !== 6
+                  ? "Code must be 6 digits"
+                  : ""
+              }
               sx={{ mb: 2 }}
             />
 
@@ -273,9 +295,13 @@ const Register = () => {
               type="password"
               value={formData.confirmPassword}
               onChange={handleChange}
-              error={formData.confirmPassword !== "" && formData.password !== formData.confirmPassword}
+              error={
+                formData.confirmPassword !== "" &&
+                formData.password !== formData.confirmPassword
+              }
               helperText={
-                formData.confirmPassword !== "" && formData.password !== formData.confirmPassword
+                formData.confirmPassword !== "" &&
+                formData.password !== formData.confirmPassword
                   ? "Passwords do not match"
                   : ""
               }
@@ -310,4 +336,4 @@ const Register = () => {
   );
 };
 
-export default Register;   
+export default Register;

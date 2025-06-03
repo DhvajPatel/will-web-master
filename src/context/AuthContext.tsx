@@ -1,11 +1,12 @@
+/* eslint-disable react-refresh/only-export-components */
 // src/context/AuthContext.tsx
-import { createContext, useContext, useEffect, useState } from "react";
-import { UserDto } from "../services/user/UserDto"; // Import UserDto
+import React, { createContext, useContext, useEffect, useState } from "react";
+import { UserDto } from "../services/user/UserDto";
 
 interface AuthContextType {
-  user: UserDto | null; // Use UserDto here
+  user: UserDto | null;
   isAuthenticated: boolean;
-  login: (user: UserDto) => void; // Accept UserDto during login
+  login: (user: UserDto) => void;
   logout: () => void;
 }
 
@@ -16,19 +17,24 @@ const AuthContext = createContext<AuthContextType>({
   logout: () => {},
 });
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<UserDto | null>(null); // Use UserDto here
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<UserDto | null>(null);
 
   useEffect(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser)); // Store and parse UserDto from sessionStorage
+      try {
+        setUser(JSON.parse(storedUser) as UserDto);
+      } catch (error) {
+        console.error("Failed to parse user from sessionStorage", error);
+        sessionStorage.removeItem("user");
+      }
     }
   }, []);
 
   const login = (user: UserDto) => {
     setUser(user);
-    sessionStorage.setItem("user", JSON.stringify(user)); // Store UserDto in sessionStorage
+    sessionStorage.setItem("user", JSON.stringify(user));
   };
 
   const logout = () => {
@@ -37,10 +43,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        login,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => useContext(AuthContext); // Access AuthContext
+export const useAuth = (): AuthContextType => useContext(AuthContext);

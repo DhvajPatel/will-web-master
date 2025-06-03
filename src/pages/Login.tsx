@@ -1,12 +1,7 @@
-/**
- * Login Component: Facilitates email and password login, leverages app context for state handling.
- */
 import { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Removed unused Link import
-import { Container, Typography, Box, TextField, Button } from "@mui/material";
-import { serviceRegistry } from "../services";
+import { useNavigate } from "react-router-dom";
+import { TextField, Button, Container, Typography, Box } from "@mui/material";
 import { useAuth } from "../context/AuthContext";
-import { useApiFlow } from "../context/ApiFlowContext";
 import { UserType } from "../services/user/UserType";
 
 const Login = () => {
@@ -14,64 +9,61 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
-  const loginService = serviceRegistry.getLoginService();
-  const { setLoading } = useApiFlow();
 
   const getDashboardRoute = (userType: UserType): string => {
     switch (userType) {
       case UserType.ACCOUNT_USER:
         return "/dashboard/account";
-      case UserType.PARTNER_USER:
-        return "/dashboard/partner";
-      case UserType.ADMIN_USER:
-        return "/dashboard/admin";
+      // Add other user types as needed
       default:
-        return "/dashboard/account"; // Default fallback
+        return "/login";
     }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      setLoading(true);
-      const response = await loginService.login({ email, password });
-      login(response.user);
-      
-      // Redirect based on user type
-      const dashboardRoute = getDashboardRoute(response.user.userType);
-      navigate(dashboardRoute);
+      const res = await fetch("http://localhost:5000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!res.ok) throw new Error("Invalid credentials");
+
+      const data = await res.json();
+      login(data.user); // Store user in context
+
+      navigate(getDashboardRoute(data.user.userType));
     } catch (err) {
-      console.error("Login failed", err);
       alert("Login failed. Please try again.");
-    } finally {
-      setLoading(false);
     }
   };
 
   return (
     <Container sx={{ padding: "20px", textAlign: "center" }}>
-      <Typography variant="h4" gutterBottom>Login to Your Account</Typography>
+      <Typography variant="h4" gutterBottom>
+        Login to Your Account
+      </Typography>
       <form onSubmit={handleLogin}>
         <Box mb={2}>
-          <TextField 
-            fullWidth 
-            label="Email" 
-            type="email" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            placeholder="Enter your email" 
-            required 
+          <TextField
+            fullWidth
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
           />
         </Box>
         <Box mb={2}>
-          <TextField 
-            fullWidth 
-            label="Password" 
-            type="password" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            placeholder="Enter your password" 
-            required 
+          <TextField
+            fullWidth
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
           />
         </Box>
         <Button type="submit" variant="contained" color="primary" fullWidth>

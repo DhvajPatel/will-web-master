@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "index.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -19,10 +20,16 @@
     "@mui/material": "^5.15.10",
     "@mui/x-data-grid": "^6.19.4",
     "@mui/x-tree-view": "^7.29.1",
+    "cors": "^2.8.5",
+    "country-flag-icons": "^1.5.19",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "fs": "^0.0.1-security",
+    "nodemailer": "^7.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.1",
+    "react-world-flags": "^1.6.0",
     "rollup": "^4.9.6"
   },
   "devDependencies": {
@@ -31,6 +38,7 @@
     "@types/node": "^20.11.19",
     "@types/react": "^18.2.55",
     "@types/react-dom": "^18.2.19",
+    "@types/react-world-flags": "^1.6.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "@vitest/ui": "^1.2.2",
     "eslint": "^8.56.0",
@@ -42,5 +50,20 @@
     "typescript-eslint": "^7.0.1",
     "vite": "^5.1.3",
     "vitest": "^1.6.1"
-  }
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DhvajPatel/will-web-master.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DhvajPatel/will-web-master/issues"
+  },
+  "homepage": "https://github.com/DhvajPatel/will-web-master#readme",
+  "description": "React + Vite + TypeScript + MUI + Express based web app with modern tooling and email integration",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
